@@ -2,7 +2,7 @@ import pygame
 
 def scale_img(img, factor):
 
-    size = round(img.get_width()* factor), round(img.get_width() * factor)
+    size = round(img.get_width()* factor), round(img.get_height() * factor)
     return pygame.transform.scale(img, size)
 
 def draw_img(window, images, player_car):

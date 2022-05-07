@@ -8,17 +8,23 @@ import os
 from utils import scale_img, draw_img, blit_rotate_center
 
 
-GRASS = scale_img(pygame.image.load("imgs/grass.jpg"), 1.2)
-TRACK = scale_img(pygame.image.load("imgs/track.png"), 0.6)
-TRACK_BORDER = scale_img(pygame.image.load("imgs/track-border.png"),0.6)
+GRASS = scale_img(pygame.image.load("imgs/grass.jpg"), 1.6)
+TRACK = scale_img(pygame.image.load("imgs/track.png"), 0.7)
+TRACK_BORDER = scale_img(pygame.image.load("imgs/track-border.png"),0.7)
 TRACK_BORDER_MASK = pygame.mask.from_surface(TRACK_BORDER)
-FINISH = pygame.image.load("imgs/finish.png")
-RED_CAR = scale_img(pygame.image.load("imgs/red-car.png"), 0.5)
-GREEN_CAR = scale_img(pygame.image.load("imgs/green-car.png"), 0.5)
+FINISH = scale_img(pygame.image.load("imgs/finish.png"),0.7)
+FINISH_POSITION = (180,200)
+FINISH_MASK = pygame.mask.from_surface(FINISH)
+
+
+RED_CAR = scale_img(pygame.image.load("imgs/red-car.png"), 0.45)
+GREEN_CAR = scale_img(pygame.image.load("imgs/green-car.png"), 0.45)
 
 images = [
     (GRASS, (0, 0)),
     (TRACK, (0, 0)),
+    (FINISH, FINISH_POSITION),
+    (TRACK_BORDER, (0,0))
     # (RED_CAR, (50,50))
     # (GRASS, (0, 0))
 ]
@@ -65,16 +71,19 @@ class AbstractCar:
         self.y -= vertical
         self.x -= horizontal
 
-    
-
     def collide(self, mask, x=0, y = 0):
         car_mask = pygame.mask.from_surface(self.img)
         offset = (int(self.x - x), int(self.y - y))
         poi = mask.overlap(car_mask, offset)
         return poi
+
+    def reset(self):
+        self.x, self.y = self.START_POS
+        self.angle = 0
+        self.velo = 0
 class PlayerCar(AbstractCar):
     IMG=RED_CAR
-    START_POS = (180,200)
+    START_POS = (195,165)
 
     def reduce_speed(self):
         self.velo = max(self.velo - self.acceleration/2, 0)
@@ -125,6 +134,13 @@ while run:
 
     if player_car.collide(TRACK_BORDER_MASK) != None:
         player_car.bounce()
+
+    finish_po_collide = player_car.collide(FINISH_MASK, *FINISH_POSITION)
+    if  finish_po_collide !=None:
+        if finish_po_collide[1] == 0:
+            player_car.bounce()
+        else :
+            player_car.reset()
         
     
 
